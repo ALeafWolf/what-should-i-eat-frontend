@@ -1,8 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="flex min-h-screen bg-gray-50">
     <AppNavbar />
-    <main class="max-w-5xl mx-auto px-4 py-8">
-      <slot />
+    <main class="flex-1 min-w-0">
+      <div class="max-w-4xl mx-auto px-6 py-8">
+        <slot />
+      </div>
     </main>
   </div>
 </template>

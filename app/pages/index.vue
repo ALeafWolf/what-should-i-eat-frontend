@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="text-center mb-10">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">What Should I Eat?</h1>
-      <p class="text-lg text-gray-500">Find a restaurant, get a recipe idea, or just ask.</p>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">{{ t('home.title') }}</h1>
+      <p class="text-lg text-gray-500">{{ t('home.subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -15,12 +15,12 @@
         <span class="text-5xl">{{ card.icon }}</span>
         <div class="text-center">
           <h2 class="text-xl font-semibold text-gray-800 group-hover:text-cyan-600 transition-colors mb-1">
-            {{ card.title }}
+            {{ t(card.titleKey) }}
           </h2>
-          <p class="text-sm text-gray-500">{{ card.description }}</p>
+          <p class="text-sm text-gray-500">{{ t(card.descriptionKey) }}</p>
         </div>
         <span class="mt-auto text-sm font-medium text-cyan-600 group-hover:underline">
-          Get started →
+          {{ t('home.getStarted') }}
         </span>
       </NuxtLink>
     </div>
@@ -28,24 +28,31 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
+useSeoMeta({
+  title: () => t('home.metaTitle'),
+  description: () => t('home.metaDescription'),
+})
+
 const cards = [
   {
     to: '/restaurant',
     icon: '🍽️',
-    title: 'Restaurant Search',
-    description: 'Find the best restaurants in your area by cuisine, budget, and preferences.',
+    titleKey: 'home.cards.restaurant.title',
+    descriptionKey: 'home.cards.restaurant.description',
   },
   {
     to: '/recipes',
     icon: '🥘',
-    title: 'Recipe Search',
-    description: 'Discover recipes based on what ingredients you already have at home.',
+    titleKey: 'home.cards.recipe.title',
+    descriptionKey: 'home.cards.recipe.description',
   },
   {
     to: '/chat',
     icon: '💬',
-    title: 'Chat',
-    description: 'Ask anything about food, restaurants, or cooking in a free-form conversation.',
+    titleKey: 'home.cards.chat.title',
+    descriptionKey: 'home.cards.chat.description',
   },
 ]
 </script>

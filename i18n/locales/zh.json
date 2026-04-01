@@ -1,0 +1,92 @@
+{
+  "nav": {
+    "home": "主页",
+    "restaurant": "餐厅",
+    "recipe": "菜谱",
+    "chat": "聊天",
+    "switchLangLabel": "切换到英文"
+  },
+  "home": {
+    "metaTitle": "要吃啥",
+    "metaDescription": "搜索餐厅、发现菜谱，获取饮食建议。",
+    "title": "要吃啥",
+    "subtitle": "搜索餐厅、获取菜谱灵感，或随时提问。",
+    "getStarted": "开始探索 →",
+    "cards": {
+      "restaurant": {
+        "title": "餐厅搜索",
+        "description": "根据菜系、预算和偏好，找到附近最好的餐厅。"
+      },
+      "recipe": {
+        "title": "菜谱搜索",
+        "description": "根据家中现有食材，发现适合的菜谱。"
+      },
+      "chat": {
+        "title": "聊天",
+        "description": "随时提问，聊聊美食、餐厅或烹饪话题。"
+      }
+    }
+  },
+  "restaurant": {
+    "metaTitle": "餐厅搜索 | 要吃啥？",
+    "metaDescription": "根据菜系、预算和偏好，找到附近最好的餐厅。",
+    "pageTitle": "餐厅搜索 | 要吃啥？",
+    "subtitle": "找到附近最好的餐厅。",
+    "loading": "正在搜索...",
+    "aiRecommendation": "AI 推荐",
+    "resultCount": "共 {n} 家",
+    "noResults": "未找到餐厅，请尝试调整搜索条件。",
+    "form": {
+      "title": "搜索餐厅",
+      "area": "区域",
+      "areaPlaceholder": "例：涩谷、东京",
+      "cuisine": "菜系",
+      "cuisinePlaceholder": "例：日本料理、意大利菜",
+      "budget": "预算（每人，¥）",
+      "budgetPlaceholder": "例：3000",
+      "preferences": "偏好",
+      "preferencesPlaceholder": "例：素食、安静、户外",
+      "commaSeparated": "多个值请用逗号分隔",
+      "search": "搜索",
+      "searching": "搜索中…"
+    }
+  },
+  "recipe": {
+    "metaTitle": "菜谱搜索 | 要吃啥？",
+    "metaDescription": "根据家中现有食材发现适合的菜谱。",
+    "pageTitle": "菜谱搜索 | 要吃啥？",
+    "subtitle": "根据手边食材，发现适合的菜谱。",
+    "loading": "正在搜索菜谱…",
+    "aiRecommendation": "AI 推荐",
+    "resultCount": "共 {n} 道菜谱",
+    "noResults": "未找到菜谱，请尝试不同的食材。",
+    "form": {
+      "title": "搜索菜谱",
+      "ingredients": "食材",
+      "ingredientsPlaceholder": "例：鸡肉、大蒜、柠檬",
+      "exclusions": "排除食材",
+      "exclusionsPlaceholder": "例：坚果、乳制品",
+      "cookingTime": "烹饪时间（分钟）",
+      "cookingTimePlaceholder": "例：30",
+      "difficulty": "难度",
+      "difficultyAny": "不限",
+      "difficultyEasy": "简单",
+      "difficultyMedium": "中等",
+      "difficultyHard": "困难",
+      "servings": "份量",
+      "servingsPlaceholder": "例：2",
+      "commaSeparated": "多个值请用逗号分隔",
+      "search": "搜索",
+      "searching": "搜索中…"
+    }
+  },
+  "chat": {
+    "metaTitle": "聊天 | 要吃啥？",
+    "metaDescription": "与 AI 聊聊美食、餐厅和烹饪话题。",
+    "pageTitle": "聊天 | 要吃啥？",
+    "subtitle": "随时提问，聊聊美食、餐厅或烹饪。",
+    "emptyState": "发送消息开始对话。",
+    "placeholder": "输入消息…",
+    "send": "发送"
+  }
+}

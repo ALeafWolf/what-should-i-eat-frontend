@@ -1,0 +1,92 @@
+{
+  "nav": {
+    "home": "Home",
+    "restaurant": "Restaurants",
+    "recipe": "Recipes",
+    "chat": "Chat",
+    "switchLangLabel": "Switch to Chinese"
+  },
+  "home": {
+    "metaTitle": "What Should I Eat?",
+    "metaDescription": "Find restaurants, discover recipes, and get food advice.",
+    "title": "What Should I Eat?",
+    "subtitle": "Find a restaurant, get a recipe idea, or just ask.",
+    "getStarted": "Get started →",
+    "cards": {
+      "restaurant": {
+        "title": "Restaurant Search",
+        "description": "Find the best restaurants in your area by cuisine, budget, and preferences."
+      },
+      "recipe": {
+        "title": "Recipe Search",
+        "description": "Discover recipes based on what ingredients you already have at home."
+      },
+      "chat": {
+        "title": "Chat",
+        "description": "Ask anything about food, restaurants, or cooking in a free-form conversation."
+      }
+    }
+  },
+  "restaurant": {
+    "metaTitle": "Restaurant Search | What Should I Eat?",
+    "metaDescription": "Find the best restaurants in your area by cuisine, budget, and preferences.",
+    "pageTitle": "Restaurant Search | What Should I Eat?",
+    "subtitle": "Find the best restaurants in your area.",
+    "loading": "Starting...",
+    "aiRecommendation": "AI Recommendation",
+    "resultCount": "{n} result | {n} results",
+    "noResults": "No restaurants found. Try adjusting your search.",
+    "form": {
+      "title": "Search Restaurants",
+      "area": "Area",
+      "areaPlaceholder": "e.g. Shibuya, Tokyo",
+      "cuisine": "Cuisine",
+      "cuisinePlaceholder": "e.g. Japanese, Italian",
+      "budget": "Budget (per person, ¥)",
+      "budgetPlaceholder": "e.g. 3000",
+      "preferences": "Preferences",
+      "preferencesPlaceholder": "e.g. vegetarian, quiet, outdoor",
+      "commaSeparated": "Comma-separated values",
+      "search": "Search",
+      "searching": "Searching…"
+    }
+  },
+  "recipe": {
+    "metaTitle": "Recipe Search | What Should I Eat?",
+    "metaDescription": "Discover recipes based on what ingredients you already have at home.",
+    "pageTitle": "Recipe Search | What Should I Eat?",
+    "subtitle": "Discover recipes based on ingredients you have at hand.",
+    "loading": "Searching recipes…",
+    "aiRecommendation": "AI Recommendation",
+    "resultCount": "{n} recipe | {n} recipes",
+    "noResults": "No recipes found. Try different ingredients.",
+    "form": {
+      "title": "Search Recipes",
+      "ingredients": "Ingredients",
+      "ingredientsPlaceholder": "e.g. chicken, garlic, lemon",
+      "exclusions": "Exclusions",
+      "exclusionsPlaceholder": "e.g. nuts, dairy",
+      "cookingTime": "Cooking Time (min)",
+      "cookingTimePlaceholder": "e.g. 30",
+      "difficulty": "Difficulty",
+      "difficultyAny": "Any",
+      "difficultyEasy": "Easy",
+      "difficultyMedium": "Medium",
+      "difficultyHard": "Hard",
+      "servings": "Servings",
+      "servingsPlaceholder": "e.g. 2",
+      "commaSeparated": "Comma-separated values",
+      "search": "Search",
+      "searching": "Searching…"
+    }
+  },
+  "chat": {
+    "metaTitle": "Chat | What Should I Eat?",
+    "metaDescription": "Chat with an AI about food, restaurants, and cooking.",
+    "pageTitle": "Chat | What Should I Eat?",
+    "subtitle": "Ask anything about food, restaurants, or cooking.",
+    "emptyState": "Send a message to start the conversation.",
+    "placeholder": "Type a message…",
+    "send": "Send"
+  }
+}
