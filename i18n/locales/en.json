@@ -42,13 +42,25 @@
       "areaPlaceholder": "e.g. Shibuya, Tokyo",
       "cuisine": "Cuisine",
       "cuisinePlaceholder": "e.g. Japanese, Italian",
-      "budget": "Budget (per person, ¥)",
-      "budgetPlaceholder": "e.g. 3000",
+      "budget": "Budget (per person, {currency})",
+      "budgetPlaceholder": "e.g. 50",
       "preferences": "Preferences",
       "preferencesPlaceholder": "e.g. vegetarian, quiet, outdoor",
       "commaSeparated": "Comma-separated values",
       "search": "Search",
       "searching": "Searching…"
+    },
+    "card": {
+      "positives": "Positives",
+      "complaints": "Complaints",
+      "recommendedDishes": "Recommended dishes",
+      "basedOnReviews": "Based on {n} review | Based on {n} reviews",
+      "viewOnGoogleMaps": "View on Google Maps"
+    },
+    "pagination": {
+      "prev": "← Prev",
+      "next": "Next →",
+      "pageOf": "Page {current} of {total}"
     }
   },
   "recipe": {

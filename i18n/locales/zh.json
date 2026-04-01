@@ -42,13 +42,25 @@
       "areaPlaceholder": "例：涩谷、东京",
       "cuisine": "菜系",
       "cuisinePlaceholder": "例：日本料理、意大利菜",
-      "budget": "预算（每人，¥）",
-      "budgetPlaceholder": "例：3000",
+      "budget": "预算（每人，{currency}）",
+      "budgetPlaceholder": "例：100",
       "preferences": "偏好",
       "preferencesPlaceholder": "例：素食、安静、户外",
       "commaSeparated": "多个值请用逗号分隔",
       "search": "搜索",
       "searching": "搜索中…"
+    },
+    "card": {
+      "positives": "优点",
+      "complaints": "不足",
+      "recommendedDishes": "推荐菜品",
+      "basedOnReviews": "基于 {n} 条评价",
+      "viewOnGoogleMaps": "在 Google 地图中查看"
+    },
+    "pagination": {
+      "prev": "← 上一页",
+      "next": "下一页 →",
+      "pageOf": "第 {current} / {total} 页"
     }
   },
   "recipe": {

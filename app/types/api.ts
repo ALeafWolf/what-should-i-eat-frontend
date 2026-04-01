@@ -3,6 +3,12 @@ export type Difficulty = 'easy' | 'medium' | 'hard'
 
 // ---------- Restaurant ----------
 
+export interface RestaurantSource {
+  type: string
+  url: string
+  name: string
+}
+
 export interface RestaurantResult {
   id: string
   name: string
@@ -15,6 +21,8 @@ export interface RestaurantResult {
   recommendedDishes: string[]
   sourceCount: number
   confidence: Confidence
+  googleMapsUrl?: string
+  sources?: RestaurantSource[]
 }
 
 export interface RestaurantResponse {
@@ -28,6 +36,8 @@ export interface RestaurantSearchRequest {
   budget?: number
   preferences?: string[]
   sessionId?: string
+  language?: string
+  currency?: string
 }
 
 // ---------- Recipe ----------

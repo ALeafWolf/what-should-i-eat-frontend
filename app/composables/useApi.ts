@@ -54,6 +54,7 @@ export function useRestaurantStream() {
   const warnings = ref<string[]>([])
   const results = ref<RestaurantResponse | null>(null)
   const error = ref<string | null>(null)
+  const { locale } = useI18n()
 
   let abortController: AbortController | null = null
 
@@ -70,11 +71,16 @@ export function useRestaurantStream() {
 
     abortController = new AbortController()
 
+    const enrichedParams: RestaurantSearchRequest = {
+      ...params,
+      language: params.language ?? locale.value,
+    }
+
     try {
       const response = await fetch('/api/restaurants', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
+        body: JSON.stringify(enrichedParams),
         signal: abortController.signal,
       })
 
