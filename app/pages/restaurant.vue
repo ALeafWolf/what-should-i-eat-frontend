@@ -12,28 +12,42 @@
       {{ error }}
     </div>
 
-    <!-- Loading -->
+    <!-- Warnings -->
+    <div v-if="warnings.length" class="space-y-2">
+      <div
+        v-for="(w, i) in warnings"
+        :key="i"
+        class="rounded-lg bg-amber-50 border border-amber-200 text-amber-700 px-4 py-2.5 text-sm flex items-center justify-between"
+      >
+        <span>{{ w }}</span>
+        <button class="ml-3 text-amber-400 hover:text-amber-600" @click="warnings.splice(i, 1)">
+          &times;
+        </button>
+      </div>
+    </div>
+
+    <!-- Streaming status -->
     <div v-if="loading" class="flex items-center justify-center py-16 text-gray-400">
       <svg class="animate-spin h-8 w-8 text-cyan-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
       </svg>
-      <span class="ml-3 text-sm">Searching restaurants…</span>
+      <span class="ml-3 text-sm">{{ statusMessage || 'Starting...' }}</span>
     </div>
 
     <!-- Results -->
-    <template v-if="result && !loading">
-      <div v-if="result.finalRecommendation" class="bg-cyan-50 border border-cyan-200 rounded-2xl px-5 py-4">
+    <template v-if="results && !loading">
+      <div v-if="results.finalRecommendation" class="bg-cyan-50 border border-cyan-200 rounded-2xl px-5 py-4">
         <p class="text-xs font-semibold text-cyan-700 mb-1">AI Recommendation</p>
-        <p class="text-sm text-gray-800">{{ result.finalRecommendation }}</p>
+        <p class="text-sm text-gray-800">{{ results.finalRecommendation }}</p>
       </div>
 
-      <div v-if="result.restaurants.length" class="space-y-4">
+      <div v-if="results.restaurants.length" class="space-y-4">
         <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-          {{ result.restaurants.length }} result{{ result.restaurants.length !== 1 ? 's' : '' }}
+          {{ results.restaurants.length }} result{{ results.restaurants.length !== 1 ? 's' : '' }}
         </h2>
         <RestaurantCard
-          v-for="r in result.restaurants"
+          v-for="r in results.restaurants"
           :key="r.id"
           :restaurant="r"
         />
@@ -45,13 +59,12 @@
 </template>
 
 <script setup lang="ts">
-import type { RestaurantResponse, RestaurantSearchRequest } from '~/types/api'
+import type { RestaurantSearchRequest } from '~/types/api'
 
-const { loading, error, searchRestaurants } = useApi()
-const result = ref<RestaurantResponse | null>(null)
+const { loading, statusMessage, warnings, results, error, streamRestaurants } = useRestaurantStream()
 
 async function onSearch(params: RestaurantSearchRequest) {
-  result.value = null
-  result.value = await searchRestaurants(params)
+  results.value = null
+  await streamRestaurants(params)
 }
 </script>

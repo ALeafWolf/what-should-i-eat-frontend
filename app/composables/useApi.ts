@@ -30,10 +30,6 @@ export function useApi() {
     return request<{ status: string }>('/api/health')
   }
 
-  async function searchRestaurants(params: RestaurantSearchRequest) {
-    return request<RestaurantResponse>('/api/restaurants', { method: 'POST', body: params })
-  }
-
   async function searchRecipes(params: RecipeSearchRequest) {
     return request<RecipeResponse>('/api/recipes', { method: 'POST', body: params })
   }
@@ -42,5 +38,103 @@ export function useApi() {
     return request<ChatResponse>('/api/chat', { method: 'POST', body: params })
   }
 
-  return { loading, error, checkHealth, searchRestaurants, searchRecipes, sendChatMessage }
+  return { loading, error, checkHealth, searchRecipes, sendChatMessage }
+}
+
+interface SseEvent {
+  type: 'status' | 'partial' | 'warning' | 'done' | 'error'
+  message?: string
+  data?: unknown
+  code?: string
+}
+
+export function useRestaurantStream() {
+  const loading = ref(false)
+  const statusMessage = ref('')
+  const warnings = ref<string[]>([])
+  const results = ref<RestaurantResponse | null>(null)
+  const error = ref<string | null>(null)
+
+  let abortController: AbortController | null = null
+
+  function abort() {
+    abortController?.abort()
+  }
+
+  async function streamRestaurants(params: RestaurantSearchRequest) {
+    loading.value = true
+    statusMessage.value = ''
+    warnings.value = []
+    results.value = null
+    error.value = null
+
+    abortController = new AbortController()
+
+    try {
+      const response = await fetch('/api/restaurants', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+        signal: abortController.signal,
+      })
+
+      if (!response.ok || !response.body) {
+        throw new Error(`Request failed with status ${response.status}`)
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() ?? ''
+
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (!trimmed.startsWith('data:')) continue
+
+          const json = trimmed.slice(5).trim()
+          if (!json) continue
+
+          let event: SseEvent
+          try {
+            event = JSON.parse(json)
+          }
+          catch {
+            continue
+          }
+
+          switch (event.type) {
+            case 'status':
+              statusMessage.value = event.message ?? ''
+              break
+            case 'warning':
+              warnings.value.push(event.message ?? '')
+              break
+            case 'done':
+              results.value = event.data as RestaurantResponse
+              break
+            case 'error':
+              error.value = event.message ?? 'Unknown error'
+              break
+          }
+        }
+      }
+    }
+    catch (e: unknown) {
+      if (e instanceof DOMException && e.name === 'AbortError') return
+      error.value = e instanceof Error ? e.message : 'An unexpected error occurred'
+    }
+    finally {
+      loading.value = false
+      abortController = null
+    }
+  }
+
+  return { loading, statusMessage, warnings, results, error, streamRestaurants, abort }
 }
