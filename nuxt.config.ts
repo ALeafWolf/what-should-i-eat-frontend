@@ -1,14 +1,20 @@
+import process from "node:process";
 import tailwindcss from "@tailwindcss/vite";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: "2025-07-15",
+  compatibilityDate: "2026-04-01",
   devtools: { enabled: true },
   modules: ["@nuxtjs/i18n"],
   css: ["~/assets/css/main.css"],
   vite: {
     optimizeDeps: {
-      include: ["@vue/devtools-core", "@vue/devtools-kit", "lucide-vue-next"],
+      include: [
+        "lucide-vue-next",
+        ...(process.env.NODE_ENV === "development"
+          ? ["@vue/devtools-core", "@vue/devtools-kit"]
+          : []),
+      ],
     },
     plugins: [tailwindcss()],
   },

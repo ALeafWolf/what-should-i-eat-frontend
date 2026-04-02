@@ -20,11 +20,11 @@
     <!-- Ingredients -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div v-if="recipe.matchedIngredients.length">
-        <p class="text-xs font-semibold text-green-700 mb-1">Matched ingredients</p>
+        <p class="text-xs font-semibold text-green-700 mb-1">{{ t('recipe.card.matchedIngredients') }}</p>
         <div class="flex flex-wrap gap-1">
           <span
-            v-for="(ing, i) in recipe.matchedIngredients"
-            :key="i"
+            v-for="ing in recipe.matchedIngredients"
+            :key="ing"
             class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full"
           >
             {{ ing }}
@@ -32,11 +32,11 @@
         </div>
       </div>
       <div v-if="recipe.missingIngredients.length">
-        <p class="text-xs font-semibold text-orange-700 mb-1">Missing ingredients</p>
+        <p class="text-xs font-semibold text-orange-700 mb-1">{{ t('recipe.card.missingIngredients') }}</p>
         <div class="flex flex-wrap gap-1">
           <span
-            v-for="(ing, i) in recipe.missingIngredients"
-            :key="i"
+            v-for="ing in recipe.missingIngredients"
+            :key="ing"
             class="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full"
           >
             {{ ing }}
@@ -52,10 +52,10 @@
         class="text-xs font-semibold text-cyan-600 hover:underline"
         @click="stepsOpen = !stepsOpen"
       >
-        {{ stepsOpen ? 'Hide steps ▲' : 'Show steps ▼' }}
+        {{ stepsOpen ? t('recipe.card.hideSteps') : t('recipe.card.showSteps') }}
       </button>
       <ol v-if="stepsOpen" class="mt-2 space-y-1 list-decimal list-inside">
-        <li v-for="(step, i) in recipe.steps" :key="i" class="text-xs text-gray-700">
+        <li v-for="(step, i) in recipe.steps" :key="`${i}-${step}`" class="text-xs text-gray-700">
           {{ step }}
         </li>
       </ol>
@@ -65,6 +65,8 @@
 
 <script setup lang="ts">
 import type { RecipeResult } from '~/types/api'
+
+const { t } = useI18n()
 
 const props = defineProps<{ recipe: RecipeResult }>()
 

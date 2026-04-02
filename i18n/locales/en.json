@@ -90,7 +90,18 @@
       "commaSeparated": "Comma-separated values",
       "search": "Search",
       "searching": "Searching…"
+    },
+    "card": {
+      "matchedIngredients": "Matched ingredients",
+      "missingIngredients": "Missing ingredients",
+      "showSteps": "Show steps ▼",
+      "hideSteps": "Hide steps ▲"
     }
+  },
+  "error": {
+    "notFound": "Page not found",
+    "generic": "Something went wrong",
+    "backHome": "Back to home"
   },
   "chat": {
     "metaTitle": "Chat | What Should I Eat?",

@@ -13,7 +13,7 @@
         {{ t('chat.emptyState') }}
       </p>
 
-      <template v-for="(msg, i) in messages" :key="i">
+      <template v-for="msg in messages" :key="msg.id">
         <div class="flex justify-end">
           <div class="max-w-[75%] bg-cyan-500 text-white text-sm rounded-2xl rounded-tr-sm px-4 py-2">
             {{ msg.user }}
@@ -24,7 +24,7 @@
             {{ msg.assistant }}
           </div>
         </div>
-        <div v-else-if="loading && i === messages.length - 1" class="flex justify-start">
+        <div v-else-if="loading && msg.id === lastMessageId" class="flex justify-start">
           <div class="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
             <span class="flex gap-1 items-center">
               <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0ms]" />
@@ -63,6 +63,7 @@
 
 <script setup lang="ts">
 interface Message {
+  id: string
   user: string
   assistant?: string
 }
@@ -80,12 +81,18 @@ const sessionId = ref<string | undefined>(undefined)
 const messages = ref<Message[]>([])
 const historyEl = ref<HTMLElement | null>(null)
 
+const lastMessageId = computed(() => messages.value[messages.value.length - 1]?.id)
+
+function newMessageId() {
+  return crypto.randomUUID()
+}
+
 async function handleSend() {
   const text = input.value.trim()
   if (!text) return
 
   input.value = ''
-  messages.value.push({ user: text })
+  messages.value.push({ id: newMessageId(), user: text })
 
   const response = await sendChatMessage({ message: text, sessionId: sessionId.value })
 

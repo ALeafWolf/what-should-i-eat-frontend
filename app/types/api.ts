@@ -40,6 +40,13 @@ export interface RestaurantSearchRequest {
   currency?: string
 }
 
+export interface SseEvent {
+  type: 'status' | 'partial' | 'warning' | 'done' | 'error'
+  message?: string
+  data?: unknown
+  code?: string
+}
+
 // ---------- Recipe ----------
 
 export interface RecipeResult {

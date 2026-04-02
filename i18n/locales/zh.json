@@ -90,7 +90,18 @@
       "commaSeparated": "多个值请用逗号分隔",
       "search": "搜索",
       "searching": "搜索中…"
+    },
+    "card": {
+      "matchedIngredients": "已有食材",
+      "missingIngredients": "缺少食材",
+      "showSteps": "显示步骤 ▼",
+      "hideSteps": "隐藏步骤 ▲"
     }
+  },
+  "error": {
+    "notFound": "页面未找到",
+    "generic": "出了点问题",
+    "backHome": "返回首页"
   },
   "chat": {
     "metaTitle": "聊天 | 要吃啥？",

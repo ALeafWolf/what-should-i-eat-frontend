@@ -5,6 +5,7 @@ import type {
   RecipeResponse,
   ChatRequest,
   ChatResponse,
+  SseEvent,
 } from '~/types/api'
 
 export function useApi() {
@@ -41,13 +42,6 @@ export function useApi() {
   return { loading, error, checkHealth, searchRecipes, sendChatMessage }
 }
 
-interface SseEvent {
-  type: 'status' | 'partial' | 'warning' | 'done' | 'error'
-  message?: string
-  data?: unknown
-  code?: string
-}
-
 export function useRestaurantStream() {
   const loading = ref(false)
   const statusMessage = ref('')
@@ -61,6 +55,16 @@ export function useRestaurantStream() {
   function abort() {
     abortController?.abort()
   }
+
+  function reset() {
+    results.value = null
+  }
+
+  function dismissWarning(index: number) {
+    warnings.value.splice(index, 1)
+  }
+
+  onUnmounted(() => abort())
 
   async function streamRestaurants(params: RestaurantSearchRequest) {
     loading.value = true
@@ -142,5 +146,15 @@ export function useRestaurantStream() {
     }
   }
 
-  return { loading, statusMessage, warnings, results, error, streamRestaurants, abort }
+  return {
+    loading,
+    statusMessage,
+    warnings,
+    results,
+    error,
+    streamRestaurants,
+    abort,
+    reset,
+    dismissWarning,
+  }
 }

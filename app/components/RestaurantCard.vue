@@ -22,7 +22,7 @@
       <div v-if="restaurant.positives.length">
         <p class="text-xs font-semibold text-green-700 mb-1">{{ t('restaurant.card.positives') }}</p>
         <ul class="space-y-0.5">
-          <li v-for="(p, i) in restaurant.positives" :key="i" class="text-xs text-gray-600 flex gap-1">
+          <li v-for="p in restaurant.positives" :key="p" class="text-xs text-gray-600 flex gap-1">
             <span class="text-green-500">+</span> {{ p }}
           </li>
         </ul>
@@ -30,7 +30,7 @@
       <div v-if="restaurant.complaints.length">
         <p class="text-xs font-semibold text-red-700 mb-1">{{ t('restaurant.card.complaints') }}</p>
         <ul class="space-y-0.5">
-          <li v-for="(c, i) in restaurant.complaints" :key="i" class="text-xs text-gray-600 flex gap-1">
+          <li v-for="c in restaurant.complaints" :key="c" class="text-xs text-gray-600 flex gap-1">
             <span class="text-red-400">−</span> {{ c }}
           </li>
         </ul>
@@ -42,8 +42,8 @@
       <p class="text-xs font-semibold text-gray-600 mb-1">{{ t('restaurant.card.recommendedDishes') }}</p>
       <div class="flex flex-wrap gap-1">
         <span
-          v-for="(dish, i) in restaurant.recommendedDishes"
-          :key="i"
+          v-for="dish in restaurant.recommendedDishes"
+          :key="dish"
           class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full"
         >
           {{ dish }}
@@ -57,8 +57,8 @@
       <div class="flex items-center gap-2">
         <template v-if="restaurant.sources && restaurant.sources.length">
           <a
-            v-for="(src, i) in restaurant.sources"
-            :key="i"
+            v-for="src in restaurant.sources"
+            :key="src.url"
             :href="src.url"
             target="_blank"
             rel="noopener noreferrer"

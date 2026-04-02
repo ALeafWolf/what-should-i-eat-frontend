@@ -25,7 +25,7 @@
         <span>{{ w }}</span>
         <button
           class="ml-3 text-amber-400 hover:text-amber-600"
-          @click="warnings.splice(i, 1)"
+          @click="dismissWarning(i)"
         >
           &times;
         </button>
@@ -144,8 +144,16 @@ useSeoMeta({
   description: () => t("restaurant.metaDescription"),
 });
 
-const { loading, statusMessage, warnings, results, error, streamRestaurants } =
-  useRestaurantStream();
+const {
+  loading,
+  statusMessage,
+  warnings,
+  results,
+  error,
+  streamRestaurants,
+  reset,
+  dismissWarning,
+} = useRestaurantStream();
 
 const PAGE_SIZE = 10;
 const currentPage = ref(1);
@@ -168,7 +176,7 @@ const pageNumbers = computed(() => {
 });
 
 async function onSearch(params: RestaurantSearchRequest) {
-  results.value = null;
+  reset();
   currentPage.value = 1;
   await streamRestaurants(params);
 }
