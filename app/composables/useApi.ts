@@ -6,6 +6,7 @@ import type {
   ChatRequest,
   ChatResponse,
   SseEvent,
+  StreamStep,
 } from '~/types/api'
 
 export function useApi() {
@@ -44,7 +45,7 @@ export function useApi() {
 
 export function useRestaurantStream() {
   const loading = ref(false)
-  const statusMessage = ref('')
+  const steps = ref<StreamStep[]>([])
   const warnings = ref<string[]>([])
   const results = ref<RestaurantResponse | null>(null)
   const error = ref<string | null>(null)
@@ -58,6 +59,7 @@ export function useRestaurantStream() {
 
   function reset() {
     results.value = null
+    steps.value = []
   }
 
   function dismissWarning(index: number) {
@@ -68,7 +70,7 @@ export function useRestaurantStream() {
 
   async function streamRestaurants(params: RestaurantSearchRequest) {
     loading.value = true
-    statusMessage.value = ''
+    steps.value = []
     warnings.value = []
     results.value = null
     error.value = null
@@ -120,14 +122,32 @@ export function useRestaurantStream() {
           }
 
           switch (event.type) {
-            case 'status':
-              statusMessage.value = event.message ?? ''
+            case 'step_start':
+              steps.value.push({
+                id: event.stepId,
+                label: event.label,
+                status: 'active',
+              })
               break
+            case 'step_done': {
+              const done = steps.value.find(s => s.id === event.stepId)
+              if (done)
+                done.status = 'done'
+              break
+            }
+            case 'step_error': {
+              const failed = steps.value.find(s => s.id === event.stepId)
+              if (failed)
+                failed.status = 'error'
+              error.value = event.message
+              break
+            }
             case 'warning':
               warnings.value.push(event.message ?? '')
               break
             case 'done':
               results.value = event.data as RestaurantResponse
+              steps.value = []
               break
             case 'error':
               error.value = event.message ?? 'Unknown error'
@@ -148,7 +168,7 @@ export function useRestaurantStream() {
 
   return {
     loading,
-    statusMessage,
+    steps,
     warnings,
     results,
     error,

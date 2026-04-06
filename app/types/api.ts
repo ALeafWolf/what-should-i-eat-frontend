@@ -40,12 +40,24 @@ export interface RestaurantSearchRequest {
   currency?: string
 }
 
-export interface SseEvent {
-  type: 'status' | 'partial' | 'warning' | 'done' | 'error'
-  message?: string
-  data?: unknown
-  code?: string
+/** Progress step shown while streaming workflow SSE (e.g. restaurant search). */
+export type StreamStepStatus = 'active' | 'done' | 'error'
+
+export interface StreamStep {
+  id: string
+  label: string
+  status: StreamStepStatus
 }
+
+export type SseEvent =
+  | { type: 'status'; message: string }
+  | { type: 'partial'; data: unknown }
+  | { type: 'warning'; message: string }
+  | { type: 'done'; data: unknown }
+  | { type: 'error'; message: string; code: string }
+  | { type: 'step_start'; stepId: string; label: string }
+  | { type: 'step_done'; stepId: string }
+  | { type: 'step_error'; stepId: string; message: string }
 
 // ---------- Recipe ----------
 
