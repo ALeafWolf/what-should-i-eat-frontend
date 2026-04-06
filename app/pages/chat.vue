@@ -7,32 +7,81 @@
 
     <div
       ref="historyEl"
-      class="bg-white rounded-2xl border border-gray-200 shadow-sm min-h-64 max-h-128 overflow-y-auto p-4 space-y-3"
+      class="bg-white rounded-2xl border border-gray-200 shadow-sm min-h-64 max-h-128 overflow-y-auto p-4 space-y-4"
     >
       <p v-if="!messages.length" class="text-sm text-gray-400 text-center py-8">
         {{ t('chat.emptyState') }}
       </p>
 
       <template v-for="msg in messages" :key="msg.id">
+        <!-- User bubble -->
         <div class="flex justify-end">
           <div class="max-w-[75%] bg-cyan-500 text-white text-sm rounded-2xl rounded-tr-sm px-4 py-2">
             {{ msg.user }}
           </div>
         </div>
-        <div v-if="msg.assistant" class="flex justify-start">
-          <div class="max-w-[75%] bg-gray-100 text-gray-800 text-sm rounded-2xl rounded-tl-sm px-4 py-2">
-            {{ msg.assistant }}
+
+        <!-- Assistant response -->
+        <template v-if="msg.assistant">
+          <!-- Text reply (clarification, food question, recipe coming soon, other) -->
+          <div v-if="msg.assistant.kind === 'text'" class="flex justify-start">
+            <div class="max-w-[85%] space-y-2">
+              <div class="bg-gray-100 text-gray-800 text-sm rounded-2xl rounded-tl-sm px-4 py-2.5 leading-relaxed">
+                {{ msg.assistant.text }}
+              </div>
+              <!-- Source links for food questions -->
+              <div v-if="msg.assistant.sources?.length" class="px-1 space-y-1">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                  {{ t('chat.sources') }}
+                </p>
+                <a
+                  v-for="src in msg.assistant.sources"
+                  :key="src.url"
+                  :href="src.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block text-xs text-cyan-600 hover:text-cyan-800 hover:underline truncate"
+                >
+                  {{ src.title }}
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
-        <div v-else-if="loading && msg.id === lastMessageId" class="flex justify-start">
-          <div class="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
-            <span class="flex gap-1 items-center">
-              <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0ms]" />
-              <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:150ms]" />
-              <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:300ms]" />
-            </span>
+
+          <!-- Restaurant search results -->
+          <div v-else-if="msg.assistant.kind === 'restaurant'" class="space-y-3">
+            <div
+              v-if="msg.assistant.finalRecommendation"
+              class="bg-cyan-50 border border-cyan-200 rounded-2xl px-4 py-3"
+            >
+              <p class="text-xs font-semibold text-cyan-700 mb-1">
+                {{ t('chat.aiRecommendation') }}
+              </p>
+              <p class="text-sm text-gray-800">{{ msg.assistant.finalRecommendation }}</p>
+            </div>
+            <RestaurantCard
+              v-for="r in msg.assistant.restaurants"
+              :key="r.id"
+              :restaurant="r"
+            />
           </div>
-        </div>
+        </template>
+
+        <!-- Loading state for the pending assistant turn -->
+        <template v-else-if="loading && msg.id === lastMessageId">
+          <!-- Workflow steps (restaurant search in progress) -->
+          <StreamStepList v-if="steps.length" :steps="steps" />
+          <!-- Generic dots while waiting for intent classification -->
+          <div v-else class="flex justify-start">
+            <div class="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
+              <span class="flex gap-1 items-center">
+                <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0ms]" />
+                <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:300ms]" />
+              </span>
+            </div>
+          </div>
+        </template>
       </template>
     </div>
 
@@ -56,16 +105,16 @@
         {{ t('chat.send') }}
       </button>
     </form>
-
-    <p v-if="sessionId" class="text-xs text-gray-400">Session: {{ sessionId }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-interface Message {
+import type { AssistantContent, RestaurantResponse } from '~/types/api'
+
+interface ChatMessage {
   id: string
   user: string
-  assistant?: string
+  assistant?: AssistantContent
 }
 
 const { t } = useI18n()
@@ -75,36 +124,48 @@ useSeoMeta({
   description: () => t('chat.metaDescription'),
 })
 
-const { loading, error, sendChatMessage } = useApi()
+const { loading, steps, error, sendMessage } = useChatStream()
 const input = ref('')
-const sessionId = ref<string | undefined>(undefined)
-const messages = ref<Message[]>([])
+const messages = ref<ChatMessage[]>([])
 const historyEl = ref<HTMLElement | null>(null)
 
 const lastMessageId = computed(() => messages.value[messages.value.length - 1]?.id)
 
-function newMessageId() {
-  return crypto.randomUUID()
-}
+// Auto-scroll whenever messages or steps change
+watch(
+  [messages, steps],
+  async () => {
+    await nextTick()
+    if (historyEl.value) {
+      historyEl.value.scrollTop = historyEl.value.scrollHeight
+    }
+  },
+  { deep: true },
+)
 
 async function handleSend() {
   const text = input.value.trim()
-  if (!text) return
+  if (!text || loading.value) return
 
   input.value = ''
-  messages.value.push({ id: newMessageId(), user: text })
+  const msgId = crypto.randomUUID()
+  messages.value.push({ id: msgId, user: text })
 
-  const response = await sendChatMessage({ message: text, sessionId: sessionId.value })
-
-  if (response) {
-    if (response.sessionId) sessionId.value = response.sessionId
-    const last = messages.value[messages.value.length - 1]
-    if (last) last.assistant = response.message
-  }
-
-  await nextTick()
-  if (historyEl.value) {
-    historyEl.value.scrollTop = historyEl.value.scrollHeight
-  }
+  await sendMessage(text, {
+    onText(text, sources) {
+      const msg = messages.value.find(m => m.id === msgId)
+      if (msg) msg.assistant = { kind: 'text', text, sources }
+    },
+    onRestaurants(data: RestaurantResponse) {
+      const msg = messages.value.find(m => m.id === msgId)
+      if (msg) {
+        msg.assistant = {
+          kind: 'restaurant',
+          restaurants: data.restaurants,
+          finalRecommendation: data.finalRecommendation,
+        }
+      }
+    },
+  })
 }
 </script>

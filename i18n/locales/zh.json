@@ -110,6 +110,8 @@
     "subtitle": "随时提问，聊聊美食、餐厅或烹饪。",
     "emptyState": "发送消息开始对话。",
     "placeholder": "输入消息…",
-    "send": "发送"
+    "send": "发送",
+    "sources": "参考来源",
+    "aiRecommendation": "AI 推荐"
   }
 }

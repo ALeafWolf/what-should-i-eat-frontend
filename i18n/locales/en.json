@@ -110,6 +110,8 @@
     "subtitle": "Ask anything about food, restaurants, or cooking.",
     "emptyState": "Send a message to start the conversation.",
     "placeholder": "Type a message…",
-    "send": "Send"
+    "send": "Send",
+    "sources": "Sources",
+    "aiRecommendation": "AI Recommendation"
   }
 }

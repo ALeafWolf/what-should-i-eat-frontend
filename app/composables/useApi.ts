@@ -4,9 +4,10 @@ import type {
   RecipeSearchRequest,
   RecipeResponse,
   ChatRequest,
-  ChatResponse,
   SseEvent,
+  SseSource,
   StreamStep,
+  AssistantContent,
 } from '~/types/api'
 
 export function useApi() {
@@ -36,11 +37,7 @@ export function useApi() {
     return request<RecipeResponse>('/api/recipes', { method: 'POST', body: params })
   }
 
-  async function sendChatMessage(params: ChatRequest) {
-    return request<ChatResponse>('/api/chat', { method: 'POST', body: params })
-  }
-
-  return { loading, error, checkHealth, searchRecipes, sendChatMessage }
+  return { loading, error, checkHealth, searchRecipes }
 }
 
 export function useRestaurantStream() {
@@ -176,5 +173,128 @@ export function useRestaurantStream() {
     abort,
     reset,
     dismissWarning,
+  }
+}
+
+interface ChatStreamCallbacks {
+  onText: (text: string, sources?: SseSource[]) => void
+  onRestaurants: (data: RestaurantResponse) => void
+}
+
+export function useChatStream() {
+  const loading = ref(false)
+  const steps = ref<StreamStep[]>([])
+  const warnings = ref<string[]>([])
+  const error = ref<string | null>(null)
+  const sessionId = ref<string | undefined>(undefined)
+
+  let abortController: AbortController | null = null
+
+  function abort() {
+    abortController?.abort()
+  }
+
+  onUnmounted(() => abort())
+
+  async function sendMessage(message: string, callbacks: ChatStreamCallbacks): Promise<void> {
+    loading.value = true
+    steps.value = []
+    warnings.value = []
+    error.value = null
+    abortController = new AbortController()
+
+    const body: ChatRequest = { message, sessionId: sessionId.value }
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: abortController.signal,
+      })
+
+      if (!response.ok || !response.body) {
+        throw new Error(`Request failed with status ${response.status}`)
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() ?? ''
+
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (!trimmed.startsWith('data:')) continue
+
+          const json = trimmed.slice(5).trim()
+          if (!json) continue
+
+          let event: SseEvent
+          try {
+            event = JSON.parse(json)
+          }
+          catch {
+            continue
+          }
+
+          switch (event.type) {
+            case 'chat_message':
+              sessionId.value = event.sessionId
+              callbacks.onText(event.message, event.sources)
+              break
+            case 'step_start':
+              steps.value.push({ id: event.stepId, label: event.label, status: 'active' })
+              break
+            case 'step_done': {
+              const s = steps.value.find(s => s.id === event.stepId)
+              if (s) s.status = 'done'
+              break
+            }
+            case 'step_error': {
+              const s = steps.value.find(s => s.id === event.stepId)
+              if (s) s.status = 'error'
+              error.value = event.message
+              break
+            }
+            case 'done':
+              steps.value = []
+              callbacks.onRestaurants(event.data as RestaurantResponse)
+              break
+            case 'warning':
+              warnings.value.push(event.message ?? '')
+              break
+            case 'error':
+              error.value = event.message ?? 'Unknown error'
+              break
+          }
+        }
+      }
+    }
+    catch (e: unknown) {
+      if (e instanceof DOMException && e.name === 'AbortError') return
+      error.value = e instanceof Error ? e.message : 'An unexpected error occurred'
+    }
+    finally {
+      loading.value = false
+      steps.value = []
+      abortController = null
+    }
+  }
+
+  return {
+    loading,
+    steps,
+    warnings,
+    error,
+    sessionId,
+    sendMessage,
+    abort,
   }
 }
